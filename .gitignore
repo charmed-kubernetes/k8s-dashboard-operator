@@ -1,0 +1,11 @@
+.history
+build/
+*.charm
+charms/kubernetes-dashboard/build/
+charms/dashboard-metrics-scraper/build/
+.tox
+.coverage*
+.stestr/
+__pycache__
+coverage
+cover

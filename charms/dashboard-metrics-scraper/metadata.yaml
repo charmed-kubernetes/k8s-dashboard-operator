@@ -1,0 +1,13 @@
+name: dashboard-metrics-scraper
+summary: Kubernetes Dashboard Metrics Scraper
+maintainers:
+  - Dominik Fleischmann <dominik.fleischmann@canonical.com>
+description: |
+  General purpose Web UI for Kubernetes clusters.
+series:
+  - kubernetes
+resources:
+  metrics-scraper-image:
+    type: oci-image
+    description: 'Dashboard Metric Scraper Image'
+    upstream-source: kubernetesui/metrics-scraper:v1.0.5

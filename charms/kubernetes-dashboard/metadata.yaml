@@ -1,0 +1,13 @@
+name: kubernetes-dashboard
+summary: Kubernetes Dashboard
+maintainers:
+  - Dominik Fleischmann <dominik.fleischmann@canonical.com>
+description: |
+  General purpose Web UI for Kubernetes clusters.
+series:
+  - kubernetes
+resources:
+  k8s-dashboard-image:
+    type: oci-image
+    description: 'Kubernetes Dashboard Image'
+    upstream-source: kubernetesui/dashboard:v2.0.4
