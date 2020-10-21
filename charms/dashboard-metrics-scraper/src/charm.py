@@ -9,7 +9,7 @@ from ops.model import ActiveStatus, MaintenanceStatus, WaitingStatus
 from oci_image import OCIImageResource, OCIImageResourceError
 
 
-class K8sDashboardCharm(CharmBase):
+class DashboardMetricsScraperCharm(CharmBase):
     def __init__(self, *args):
         super().__init__(*args)
         if not self.unit.is_leader():
@@ -150,4 +150,4 @@ class K8sDashboardCharm(CharmBase):
 
 
 if __name__ == "__main__":
-    main(K8sDashboardCharm)
+    main(DashboardMetricsScraperCharm)

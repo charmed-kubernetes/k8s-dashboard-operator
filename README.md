@@ -2,12 +2,12 @@
 
 ## How to build and deploy:
 
-1) Pull the repository locally
-2) `cd dashboard-operator`
-2) build both charms:
-  2.1) `charmcraft build -f charms/kubernetes-dashboard`
-  2.2) `charmcraft build -f charms/dashboard-metrics-scraper`
-3) deploy with the overlay: 
+1. Pull the repository locally
+2. `cd dashboard-operator`
+2. build both charms:
+`charmcraft build -f charms/kubernetes-dashboard`
+`charmcraft build -f charms/dashboard-metrics-scraper`
+3. deploy with the overlay: 
     `juju deploy ./docs/local-overlay.yaml`
 
 ## Testing
