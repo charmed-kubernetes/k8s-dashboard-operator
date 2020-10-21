@@ -59,7 +59,9 @@ class K8sDashboardCharm(CharmBase):
                     'args': [
                         '--auto-generate-certificates',
                         "--namespace={}".format(self.model.name),
-                        '--sidecar-host=http://dashboard-metrics-scraper:8000'
+                        '--sidecar-host=http://dashboard-metrics-scraper:8000',
+                        "--authentication-mode={}".format(
+                            self.model.config['authentication-mode']),
                     ],
                     'volumeConfig': [
                         {

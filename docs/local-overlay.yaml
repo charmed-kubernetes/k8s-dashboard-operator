@@ -7,7 +7,7 @@ description: |
     2.1) charmcraft build -f charms/kubernetes-dashboard
     2.2) charmcraft build -f charms/dashboard-metrics-scraper
   3) deploy with the overlay: 
-      `juju deploy ./bundles/bundle.yaml --overlay ./docs/local-overlay.yaml`
+      `juju deploy ./docs/local-overlay.yaml`
 bundle: kubernetes
 applications:
   kubernetes-dashboard:
