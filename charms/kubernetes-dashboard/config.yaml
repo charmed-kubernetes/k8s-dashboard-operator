@@ -7,3 +7,7 @@ options:
       the same order as provided. Multiple options can be used at once. Supported
       values: token, basic. Note that basic option should only be used if apiserver
       has '--authorization-mode=ABAC' and '--basic-auth-file' flags set.
+  metrics-scraper-enabled:
+    type: boolean
+    default: true
+    description: Enable need for metrics-scraper

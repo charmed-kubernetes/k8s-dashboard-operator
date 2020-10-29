@@ -4,24 +4,29 @@ import logging
 
 from ops.charm import CharmBase
 from ops.main import main
-from ops.model import ActiveStatus, MaintenanceStatus, WaitingStatus
+from ops.model import ActiveStatus, MaintenanceStatus, WaitingStatus, BlockedStatus
+from ops.framework import StoredState
 
+from k8s_service import RequireK8sService
 from oci_image import OCIImageResource, OCIImageResourceError
 
 
 class K8sDashboardCharm(CharmBase):
+
     def __init__(self, *args):
         super().__init__(*args)
         if not self.unit.is_leader():
             # We can't do anything useful when not the leader, so do nothing.
             self.model.unit.status = WaitingStatus('Waiting for leadership')
             return
+        self.metrics_scraper = RequireK8sService(self, "metrics-scraper")
         self.log = logging.getLogger(__name__)
         self.dashboard_image = OCIImageResource(self, 'k8s-dashboard-image')
         for event in [self.on.install,
                       self.on.leader_elected,
                       self.on.upgrade_charm,
-                      self.on.config_changed]:
+                      self.on.config_changed,
+                      self.metrics_scraper.on.k8s_service_available]:
             self.framework.observe(event, self.main)
 
     def main(self, event):
@@ -30,6 +35,18 @@ class K8sDashboardCharm(CharmBase):
         except OCIImageResourceError as e:
             self.model.unit.status = e.status
             return
+
+        ms_enabled = self.model.config["metrics-scraper-enabled"]
+        if not ms_enabled:
+            metrics_scraper_args = ["--metrics-provider=none"]
+        else:
+            if not self.metrics_scraper.is_available():
+                self.model.unit.status = BlockedStatus("Waiting for Metrics Scraper")
+                return
+            metrics_scraper_args = ["--metrics-provider=sidecar",
+                                    "--sidecar-host=http://{}:{}".format(
+                                        self.metrics_scraper.service_name,
+                                        self.metrics_scraper.service_port)]
 
         self.model.unit.status = MaintenanceStatus('Setting pod spec')
 
@@ -46,7 +63,7 @@ class K8sDashboardCharm(CharmBase):
             },
             'containers': [
                 {
-                    'name': 'kubernetes-dashboard',
+                    'name': "{}-charm".format(self.model.app.name),
                     'imageDetails': dashboard_image_details,
                     'imagePullPolicy': 'Always',
                     'ports': [
@@ -59,10 +76,9 @@ class K8sDashboardCharm(CharmBase):
                     'args': [
                         '--auto-generate-certificates',
                         "--namespace={}".format(self.model.name),
-                        '--sidecar-host=http://dashboard-metrics-scraper:8000',
                         "--authentication-mode={}".format(
                             self.model.config['authentication-mode']),
-                    ],
+                    ] + metrics_scraper_args,
                     'volumeConfig': [
                         {
                             'name': 'kubernetes-dashboard-certs',

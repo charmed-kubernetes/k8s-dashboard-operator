@@ -6,6 +6,9 @@ description: |
   General purpose Web UI for Kubernetes clusters.
 series:
   - kubernetes
+provides:
+  metrics-scraper:
+    interface: metrics-scraper
 resources:
   metrics-scraper-image:
     type: oci-image

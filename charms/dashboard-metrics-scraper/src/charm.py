@@ -7,6 +7,7 @@ from ops.main import main
 from ops.model import ActiveStatus, MaintenanceStatus, WaitingStatus
 
 from oci_image import OCIImageResource, OCIImageResourceError
+from k8s_service import ProvideK8sService
 
 
 class DashboardMetricsScraperCharm(CharmBase):
@@ -16,6 +17,8 @@ class DashboardMetricsScraperCharm(CharmBase):
             # We can't do anything useful when not the leader, so do nothing.
             self.model.unit.status = WaitingStatus('Waiting for leadership')
             return
+
+        self.service_data = ProvideK8sService(self, 'metrics-scraper')
         self.log = logging.getLogger(__name__)
         self.scraper_image = OCIImageResource(self, 'metrics-scraper-image')
         for event in [self.on.install,
@@ -46,12 +49,12 @@ class DashboardMetricsScraperCharm(CharmBase):
             },
             'containers': [
                 {
-                    'name': 'dashboard-metrics-scraper',
+                    'name': self.model.app.name,
                     'imageDetails': scraper_image_details,
                     'ports': [
                         {
                             'name': 'scraper',
-                            'containerPort': 8000,
+                            'containerPort': self.model.config["port"],
                             'protocol': 'TCP',
                         },
                     ],

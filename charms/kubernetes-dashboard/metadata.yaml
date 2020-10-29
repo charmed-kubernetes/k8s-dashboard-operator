@@ -6,6 +6,10 @@ description: |
   General purpose Web UI for Kubernetes clusters.
 series:
   - kubernetes
+requires:
+  metrics-scraper:
+    interface: metrics-scraper
+min-juju-version: 2.8.0
 resources:
   k8s-dashboard-image:
     type: oci-image
