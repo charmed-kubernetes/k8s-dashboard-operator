@@ -1,0 +1,24 @@
+description: |
+  A local overlay to deploy the charms from this repo. This is meant for developers.
+  The appropriate steps to use this would be to:
+  1) pull the repo locally
+  2) cd dashboard-operator
+  2) build both charms:
+    2.1) charmcraft build -f charms/kubernetes-dashboard
+    2.2) charmcraft build -f charms/dashboard-metrics-scraper
+  3) deploy with the overlay: 
+      `juju deploy ./docs/local-overlay.yaml`
+bundle: kubernetes
+applications:
+  kubernetes-dashboard:
+    charm: ../kubernetes-dashboard.charm
+    scale: 1
+    resources:
+      k8s-dashboard-image: 'kubernetesui/dashboard:v2.0.4'
+  dashboard-metrics-scraper:
+    charm: ../dashboard-metrics-scraper.charm
+    scale: 1
+    resources:
+      metrics-scraper-image: 'kubernetesui/metrics-scraper:v1.0.5'
+relations:
+  - [dashboard-metrics-scraper, kubernetes-dashboard]
