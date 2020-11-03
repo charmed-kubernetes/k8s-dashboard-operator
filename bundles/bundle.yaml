@@ -1,0 +1,9 @@
+description: A charm bundle to deploy the Kubernetes Dashboard
+bundle: kubernetes
+applications:
+  kubernetes-dashboard:
+    charm: cs:~containers/kubernetes-dashboard
+    scale: 1
+  metallb-speaker:
+    charm: cs:~containers/dashboard-metrics-scraper
+    scale: 1

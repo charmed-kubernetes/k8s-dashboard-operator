@@ -1,0 +1,5 @@
+-i https://pypi.org/simple
+git+https://github.com/DomFleischmann/interface-k8s-service-1.git@d5dfac8704cddcb03ccc06c6447b12e7e67a4912#egg=k8s-service
+git+https://github.com/juju-solutions/resource-oci-image/@c5778285d332edf3d9a538f9d0c06154b7ec1b0b#egg=oci-image
+ops==1.0.0
+pyyaml==5.3.1

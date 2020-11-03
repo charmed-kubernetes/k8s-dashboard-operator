@@ -1,0 +1,9 @@
+options:
+  authentication-mode:
+    type: string
+    default: 'token'
+    description: |
+      Enables authentication options that will be reflected on the login screen in
+      the same order as provided. Multiple options can be used at once. Supported
+      values: token, basic. Note that basic option should only be used if apiserver
+      has '--authorization-mode=ABAC' and '--basic-auth-file' flags set.

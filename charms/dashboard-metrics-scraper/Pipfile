@@ -1,0 +1,18 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+pytest = "*"
+flake8 = "*"
+ipdb = "*"
+
+[packages]
+ops = "*"
+oci-image = {git = "https://github.com/juju-solutions/resource-oci-image/"}
+pyyaml = "*"
+k8s-service= {git = "https://github.com/DomFleischmann/interface-k8s-service-1.git"}
+
+[requires]
+python_version = "3.8"
