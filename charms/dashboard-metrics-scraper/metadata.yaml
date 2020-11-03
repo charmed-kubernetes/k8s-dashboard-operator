@@ -8,7 +8,7 @@ series:
   - kubernetes
 provides:
   metrics-scraper:
-    interface: metrics-scraper
+    interface: k8s-service
 resources:
   metrics-scraper-image:
     type: oci-image

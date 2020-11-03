@@ -4,7 +4,7 @@ import logging
 
 from ops.charm import CharmBase
 from ops.main import main
-from ops.model import ActiveStatus, MaintenanceStatus, WaitingStatus, BlockedStatus
+from ops.model import ActiveStatus, MaintenanceStatus, WaitingStatus
 from ops.framework import StoredState
 
 from k8s_service import RequireK8sService
@@ -12,6 +12,7 @@ from oci_image import OCIImageResource, OCIImageResourceError
 
 
 class K8sDashboardCharm(CharmBase):
+    state = StoredState()
 
     def __init__(self, *args):
         super().__init__(*args)
@@ -19,34 +20,36 @@ class K8sDashboardCharm(CharmBase):
             # We can't do anything useful when not the leader, so do nothing.
             self.model.unit.status = WaitingStatus('Waiting for leadership')
             return
-        self.metrics_scraper = RequireK8sService(self, "metrics-scraper")
         self.log = logging.getLogger(__name__)
         self.dashboard_image = OCIImageResource(self, 'k8s-dashboard-image')
+        self.metrics_scraper = RequireK8sService(self, "metrics-scraper")
         for event in [self.on.install,
                       self.on.leader_elected,
                       self.on.upgrade_charm,
                       self.on.config_changed,
+                      self.on["metrics-scraper"].relation_changed,
                       self.metrics_scraper.on.k8s_service_available]:
             self.framework.observe(event, self.main)
 
     def main(self, event):
+
         try:
             dashboard_image_details = self.dashboard_image.fetch()
         except OCIImageResourceError as e:
             self.model.unit.status = e.status
             return
 
-        ms_enabled = self.model.config["metrics-scraper-enabled"]
-        if not ms_enabled:
+        if not self.metrics_scraper.is_created:
             metrics_scraper_args = ["--metrics-provider=none"]
         else:
-            if not self.metrics_scraper.is_available():
-                self.model.unit.status = BlockedStatus("Waiting for Metrics Scraper")
+            if not self.metrics_scraper.is_available:
+                self.model.unit.status = WaitingStatus("Waiting for Metrics Scraper")
                 return
+            ms_service_name, ms_service_port = self.metrics_scraper.services[0]
             metrics_scraper_args = ["--metrics-provider=sidecar",
                                     "--sidecar-host=http://{}:{}".format(
-                                        self.metrics_scraper.service_name,
-                                        self.metrics_scraper.service_port)]
+                                        ms_service_name,
+                                        ms_service_port)]
 
         self.model.unit.status = MaintenanceStatus('Setting pod spec')
 

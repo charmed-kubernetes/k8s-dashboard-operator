@@ -8,7 +8,7 @@ series:
   - kubernetes
 requires:
   metrics-scraper:
-    interface: metrics-scraper
+    interface: k8s-service
 min-juju-version: 2.8.0
 resources:
   k8s-dashboard-image:

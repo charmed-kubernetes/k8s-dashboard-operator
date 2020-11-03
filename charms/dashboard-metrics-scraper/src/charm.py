@@ -18,7 +18,11 @@ class DashboardMetricsScraperCharm(CharmBase):
             self.model.unit.status = WaitingStatus('Waiting for leadership')
             return
 
-        self.service_data = ProvideK8sService(self, 'metrics-scraper')
+        ProvideK8sService(self,
+                          'metrics-scraper',
+                          service_name=self.app.name,
+                          service_port=self.model.config["port"])
+
         self.log = logging.getLogger(__name__)
         self.scraper_image = OCIImageResource(self, 'metrics-scraper-image')
         for event in [self.on.install,

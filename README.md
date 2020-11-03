@@ -1,15 +1,13 @@
-Initial commit
-=======
 # Kubernetes Dashboard Operator
 
 ## How to build and deploy:
 
 1. Pull the repository locally
-2. `cd dashboard-operator`
-2. build both charms:
+3. `cd dashboard-operator`
+4. build both charms:
 `charmcraft build -f charms/kubernetes-dashboard`
 `charmcraft build -f charms/dashboard-metrics-scraper`
-3. deploy with the overlay: 
+5. deploy with the overlay: 
     `juju deploy ./docs/local-overlay.yaml`
 
 ## Testing
@@ -18,6 +16,4 @@ Initial commit
 
 Open in your browser the following url:
 
-<localhost:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:8443/proxy/>
-
-In case you are deploying to a different namespaces than `kubernetes-dashboard`, you will  have to write that namespace after `v1/namespaces/`.
+<http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/>
