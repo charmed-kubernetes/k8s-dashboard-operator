@@ -10,7 +10,7 @@ description: |
       `juju deploy ./docs/local-overlay.yaml`
 bundle: kubernetes
 applications:
-  kubernetes-dashboard:
+  k8s-dashboard:
     charm: ../kubernetes-dashboard.charm
     scale: 1
     resources:
@@ -21,4 +21,4 @@ applications:
     resources:
       metrics-scraper-image: 'kubernetesui/metrics-scraper:v1.0.5'
 relations:
-  - [dashboard-metrics-scraper, kubernetes-dashboard]
+  - [dashboard-metrics-scraper, k8s-dashboard]
