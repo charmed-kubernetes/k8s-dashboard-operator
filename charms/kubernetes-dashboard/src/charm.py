@@ -198,7 +198,7 @@ class K8sDashboardCharm(CharmBase):
                     'name': 'kubernetes-dashboard',
                     'spec': {
                         'selector': {
-                            'juju-app': 'kubernetes-dashboard',
+                            'juju-app': self.model.app.name,
                         },
                         'ports': [{
                             'protocol': 'TCP',
