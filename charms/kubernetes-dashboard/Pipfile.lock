@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "b65f47a5fc007cda062533f30488aed0b1dccf75091974c4e767e57cca334f78"
+            "sha256": "892c92ebac2ee510e9fc0bd47ab4d1a1a5bb303cf96ac70b98fb95d55a6e966f"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -17,8 +17,8 @@
     },
     "default": {
         "k8s-service": {
-            "git": "https://github.com/DomFleischmann/interface-k8s-service-1.git",
-            "ref": "e29c19e37016c25185f262cb97f75779ef564503"
+            "git": "https://github.com/charmed-kubernetes/interface-k8s-service",
+            "ref": "55e1b640937ac55b8501aa1459a712206f30512c"
         },
         "oci-image": {
             "git": "https://github.com/juju-solutions/resource-oci-image/",
