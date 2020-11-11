@@ -27,8 +27,7 @@ class K8sDashboardCharm(CharmBase):
                       self.on.leader_elected,
                       self.on.upgrade_charm,
                       self.on.config_changed,
-                      self.on["metrics-scraper"].relation_changed,
-                      self.metrics_scraper.on.k8s_service_available]:
+                      self.metrics_scraper.on.k8s_services_changed]:
             self.framework.observe(event, self.main)
 
     def main(self, event):
