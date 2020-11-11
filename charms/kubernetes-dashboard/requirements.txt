@@ -1,5 +1,5 @@
 -i https://pypi.org/simple
-git+https://github.com/charmed-kubernetes/interface-k8s-service@55e1b640937ac55b8501aa1459a712206f30512c#egg=k8s-service
+git+https://github.com/charmed-kubernetes/interface-k8s-service@9c195aeb3e70cfff285fde8c87a7abe0f7ff18d2#egg=k8s-service
 git+https://github.com/juju-solutions/resource-oci-image/@c5778285d332edf3d9a538f9d0c06154b7ec1b0b#egg=oci-image
-ops==1.0.0
+ops==1.0.1
 pyyaml==5.3.1
