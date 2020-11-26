@@ -54,11 +54,10 @@ def test_main_with_relation(harness):
         'password': '',
     })
     rel_id = harness.add_relation("metrics-scraper", "dashboard-metrics-scraper")
-    # harness.begin_with_initial_hooks()
-    # assert isinstance(harness.charm.model.unit.status, WaitingStatus)
+    harness.begin_with_initial_hooks()
+    assert isinstance(harness.charm.model.unit.status, WaitingStatus)
     harness.add_relation_unit(rel_id, "dashboard-metrics-scraper/0")
-    harness.update_relation_data(rel_id, "k8s-dashboard/0",
+    harness.update_relation_data(rel_id, "dashboard-metrics-scraper",
                                  {"service-name": "dashboard-metrics-scraper",
                                   "service-port": "8000"})
-    harness.begin_with_initial_hooks()
     assert isinstance(harness.charm.model.unit.status, ActiveStatus)
