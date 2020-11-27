@@ -7,3 +7,32 @@ options:
       the same order as provided. Multiple options can be used at once. Supported
       values: token, basic. Note that basic option should only be used if apiserver
       has '--authorization-mode=ABAC' and '--basic-auth-file' flags set.
+  site-url:
+    type: string
+    default: ""
+    description: |
+      Url for ingress
+  ingress-whitelist-source-range:
+    type: string
+    description: |
+      A comma-separated list of CIDRs to store in the ingress.kubernetes.io/whitelist-source-range annotation.
+
+      This can be used to lock down access to Kubernetes Dashboard based on source IP address.
+    default: ''
+  tls-secret-name:
+    type: string
+    description: |
+      The name of the Kubernetes secret to be associated with the ingress resource.
+
+      This setting is ignored unless site_url begins with "https".
+    default: ''
+  max-file-size:
+    type: int
+    description: |
+      The maximum file size, in megabytes.
+
+      If there is a reverse proxy in front of Mattermost, it may
+      need to be configured to handle the requested size.
+
+      For more information, see the Mattermost documentation.
+    default: 5
