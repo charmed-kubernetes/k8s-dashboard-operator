@@ -29,7 +29,7 @@ def test_missing_image(harness):
     assert isinstance(harness.charm.model.unit.status, BlockedStatus)
 
 
-def test_main(harness):
+def test_main_no_relation(harness):
     harness.set_leader(True)
     harness.add_oci_resource('k8s-dashboard-image', {
         'registrypath': 'kubernetesui/dashboard:v2.0.4',
@@ -38,5 +38,26 @@ def test_main(harness):
     })
     harness.begin_with_initial_hooks()
     assert isinstance(harness.charm.model.unit.status, ActiveStatus)
+    pod_spec = harness.get_pod_spec()
+
     # confirm that we can serialize the pod spec
-    yaml.dump(harness.get_pod_spec(), Dumper=_DefaultDumper)
+    yaml.dump(pod_spec, Dumper=_DefaultDumper)
+
+    assert "--metrics-provider=none" in pod_spec[0]["containers"][0]["args"]
+
+
+def test_main_with_relation(harness):
+    harness.set_leader(True)
+    harness.add_oci_resource('k8s-dashboard-image', {
+        'registrypath': 'kubernetesui/dashboard:v2.0.4',
+        'username': '',
+        'password': '',
+    })
+    rel_id = harness.add_relation("metrics-scraper", "dashboard-metrics-scraper")
+    harness.begin_with_initial_hooks()
+    assert isinstance(harness.charm.model.unit.status, WaitingStatus)
+    harness.add_relation_unit(rel_id, "dashboard-metrics-scraper/0")
+    harness.update_relation_data(rel_id, "dashboard-metrics-scraper",
+                                 {"service-name": "dashboard-metrics-scraper",
+                                  "service-port": "8000"})
+    assert isinstance(harness.charm.model.unit.status, ActiveStatus)
