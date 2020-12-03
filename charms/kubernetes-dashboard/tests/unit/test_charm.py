@@ -1,5 +1,4 @@
 import pytest
-import time
 
 from ops.model import ActiveStatus, BlockedStatus, WaitingStatus
 from ops.testing import Harness
@@ -43,8 +42,9 @@ def test_main_no_relation(harness):
 
     # confirm that we can serialize the pod spec
     yaml.dump(pod_spec, Dumper=_DefaultDumper)
-    
+
     assert "--metrics-provider=none" in pod_spec[0]["containers"][0]["args"]
+
 
 def test_main_with_relation(harness):
     harness.set_leader(True)
