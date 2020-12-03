@@ -11,7 +11,7 @@ description: |
 bundle: kubernetes
 applications:
   k8s-dashboard:
-    charm: ../kubernetes-dashboard.charm
+    charm: ../k8s-dashboard.charm
     scale: 1
     resources:
       k8s-dashboard-image: 'kubernetesui/dashboard:v2.0.4'
