@@ -61,3 +61,10 @@ def test_main_with_relation(harness):
                                  {"service-name": "dashboard-metrics-scraper",
                                   "service-port": "8000"})
     assert isinstance(harness.charm.model.unit.status, ActiveStatus)
+
+    pod_spec = harness.get_pod_spec()
+    yaml.dump(pod_spec, Dumper=_DefaultDumper)
+    metrics_provider = "--metrics-provider=sidecar"
+    sidecar_host = "--sidecar-host=http://dashboard-metrics-scraper:8000"
+    assert metrics_provider in pod_spec[0]["containers"][0]["args"]
+    assert sidecar_host in pod_spec[0]["containers"][0]["args"]
