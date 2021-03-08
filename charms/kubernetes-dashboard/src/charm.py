@@ -9,6 +9,7 @@ from ops.framework import StoredState
 
 from k8s_service import RequireK8sService
 from oci_image import OCIImageResource, OCIImageResourceError
+from urllib.parse import urlparse
 
 
 class K8sDashboardCharm(CharmBase):
@@ -31,7 +32,6 @@ class K8sDashboardCharm(CharmBase):
             self.framework.observe(event, self.main)
 
     def main(self, event):
-
         try:
             dashboard_image_details = self.dashboard_image.fetch()
         except OCIImageResourceError as e:
@@ -51,6 +51,7 @@ class K8sDashboardCharm(CharmBase):
                                         ms_service_port)]
 
         self.model.unit.status = MaintenanceStatus('Setting pod spec')
+        ingress_resources = self._build_pod_ingress_resources()
 
         self.model.pod.set_spec({
             'version': 3,
@@ -206,10 +207,68 @@ class K8sDashboardCharm(CharmBase):
                         }],
                     },
                 }],
+                'ingressResources': ingress_resources or [],
             },
         })
 
         self.model.unit.status = ActiveStatus()
+
+    def _build_pod_ingress_resources(self):
+        """Generate pod ingress resources.
+
+        Returns:
+            List[Dict[str, Any]]: pod ingress resources.
+        """
+
+        site_url = self.model.config['site-url']
+        if not site_url:
+            return
+
+        parsed = urlparse(site_url)
+
+        if not parsed.scheme.startswith('http'):
+            return
+
+        annotations = {
+            'nginx.ingress.kubernetes.io/proxy-body-size': '{}m'.format(
+                self.model.config['max-file-size'])
+            }
+        ingress = {
+            "name": "{}-ingress".format(self.app.name),
+            "spec": {
+                "rules": [
+                    {
+                        "host": parsed.hostname,
+                        "http": {
+                            "paths": [{
+                                "path": "/",
+                                "backend": {
+                                    "serviceName": self.app.name,
+                                    "servicePort": 8443
+                                }
+                            }],
+                        },
+                    },
+                ],
+            },
+        }
+        if parsed.scheme == 'https':
+            ingress['spec']['tls'] = [{'hosts': [parsed.hostname]}]
+            tls_secret_name = self.model.config['tls-secret-name']
+            if tls_secret_name:
+                ingress['spec']['tls'][0]['secretName'] = tls_secret_name
+        else:
+            annotations['nginx.ingress.kubernetes.io/ssl-redirect'] = 'false'
+
+        whitelist_source_range = self.model.config['ingress-whitelist-source-range']
+        if whitelist_source_range:
+            whitelist_annotation = 'nginx.ingress.kubernetes.io/whitelist-source-range'
+            annotations[whitelist_annotation] = whitelist_source_range
+
+        if annotations:
+            ingress['annotations'] = annotations
+
+        return [ingress]
 
 
 if __name__ == "__main__":

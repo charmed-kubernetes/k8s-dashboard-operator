@@ -76,3 +76,61 @@ def test_main_with_relation(harness):
     sidecar_host = "--sidecar-host=http://dashboard-metrics-scraper:8000"
     assert metrics_provider in pod_spec[0]["containers"][0]["args"]
     assert sidecar_host in pod_spec[0]["containers"][0]["args"]
+
+
+def test_main_ingress_http(harness):
+    harness.set_leader(True)
+    harness.add_oci_resource(
+        "k8s-dashboard-image",
+        {
+            "registrypath": "kubernetesui/dashboard:v2.0.4",
+            "username": "",
+            "password": "",
+        },
+    )
+    harness.update_config(key_values={"site-url": "http://k8sdashboard.7.7.7.7.xip.io"})
+    harness.begin_with_initial_hooks()
+    assert isinstance(harness.charm.model.unit.status, ActiveStatus)
+    pod_spec = harness.get_pod_spec()
+
+    # confirm that we can serialize the pod spec
+    yaml.dump(pod_spec, Dumper=_DefaultDumper)
+    ingressResource = pod_spec[0]["kubernetesResources"]["ingressResources"][0]
+
+    assert "k8s-dashboard-ingress" == ingressResource["name"]
+    assert "k8sdashboard.7.7.7.7.xip.io" == ingressResource["spec"]["rules"][0]["host"]
+    assert (
+        "false"
+        == ingressResource["annotations"]["nginx.ingress.kubernetes.io/ssl-redirect"]
+    )
+
+
+def test_main_ingress_https(harness):
+    harness.set_leader(True)
+    harness.add_oci_resource(
+        "k8s-dashboard-image",
+        {
+            "registrypath": "kubernetesui/dashboard:v2.0.4",
+            "username": "",
+            "password": "",
+        },
+    )
+    harness.update_config(
+        key_values={"site-url": "https://k8sdashboard.7.7.7.7.xip.io"}
+    )
+    harness.begin_with_initial_hooks()
+    assert isinstance(harness.charm.model.unit.status, ActiveStatus)
+    pod_spec = harness.get_pod_spec()
+
+    # confirm that we can serialize the pod spec
+    yaml.dump(pod_spec, Dumper=_DefaultDumper)
+    ingressResource = pod_spec[0]["kubernetesResources"]["ingressResources"][0]
+
+    assert "k8s-dashboard-ingress" == ingressResource["name"]
+    assert "k8sdashboard.7.7.7.7.xip.io" == ingressResource["spec"]["rules"][0]["host"]
+    assert (
+        "nginx.ingress.kubernetes.io/ssl-redirect" not in ingressResource["annotations"]
+    )
+    assert (
+        "k8sdashboard.7.7.7.7.xip.io" == ingressResource["spec"]["tls"][0]["hosts"][0]
+    )
